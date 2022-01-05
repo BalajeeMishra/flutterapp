@@ -12,7 +12,9 @@ import './edit_product_screen.dart';
 class UserProductScreen extends StatelessWidget {
   static const routeName = "/user-products";
   Future<void> _refreshProducts(BuildContext context) async {
-    await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    // i have passed true so that it will filter by user
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts(true);
   }
 
   @override
@@ -31,24 +33,37 @@ class UserProductScreen extends StatelessWidget {
         ],
       ),
       drawer: MainDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProducts(context),
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: ListView.builder(
-            itemCount: productsData.item.length,
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductItem(
-                  productsData.item[i].id as String,
-                  productsData.item[i].title,
-                  productsData.item[i].imageUrl,
-                ),
-                Divider(),
-              ],
-            ),
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (ctx, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _refreshProducts(context),
+                    // here i have used consumer because of ki infinite loop na chale okayy.
+                    //otherwise kya hoga ki refreshproducts chal jaega then again build hoga aur fir
+                    //se fuurebuilder chalega thats not good at all.
+                    child: Consumer<Products>(
+                      builder: (ctx, productsData, _) => Padding(
+                        padding: EdgeInsets.all(8),
+                        child: ListView.builder(
+                          itemCount: productsData.item.length,
+                          itemBuilder: (_, i) => Column(
+                            children: [
+                              UserProductItem(
+                                productsData.item[i].id as String,
+                                productsData.item[i].title,
+                                productsData.item[i].imageUrl,
+                              ),
+                              Divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }
