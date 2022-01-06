@@ -61,12 +61,13 @@ class Products with ChangeNotifier {
     // which belongs to every user with the use of orderby and equalto.
     // iske bad tumko database me jake rule bhi check krna hai... okay.
     final filterString =
-        filterByUser ? "orderBy='creatorId'&equalTo='$userId'" : "";
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
-        "https://shopapp-36cb1-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString");
+        'https://shopapp-36cb1-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      print(extractedData);
       // if (extractedData == null) {
       //   return;
       // }
