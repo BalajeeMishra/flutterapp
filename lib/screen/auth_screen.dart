@@ -211,6 +211,7 @@ class _AuthCardState extends State<AuthCard>
     });
   }
 
+//hey
   void _switchAuthMode() {
     //  _controller!.forward() and reverse for animation ;
     if (_authMode == AuthMode.Login) {
